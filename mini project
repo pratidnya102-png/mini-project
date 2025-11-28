@@ -1,0 +1,87 @@
+import csv
+from datetime import datetime
+
+students = []
+attendance_records = {}
+
+def add_students():
+    print("\n--- Add Students ---")
+    n = int(input("Enter number of students: "))
+    for i in range(n):
+        name = input(f"Enter student {i+1} name: ")
+        students.append(name)
+    print("Students added successfully!\n")
+
+
+def mark_attendance():
+    print("\n--- Mark Attendance ---")
+    today = datetime.now().strftime("%Y-%m-%d")
+    attendance = {}
+
+    for student in students:
+        status = input(f"Is {student} present? (P/A): ").upper()
+        while status not in ["P", "A"]:
+            status = input("Invalid! Enter P or A: ").upper()
+        attendance[student] = status
+
+    attendance_records[today] = attendance
+    print("\nAttendance marked for today!\n")
+
+
+def view_attendance():
+    print("\n--- Attendance Records ---")
+    if not attendance_records:
+        print("No attendance records found.\n")
+        return
+
+    for date, records in attendance_records.items():
+        print(f"\nDate: {date}")
+        for student, status in records.items():
+            print(f"{student}: {'Present' if status == 'P' else 'Absent'}")
+    print()
+
+
+def save_to_csv():
+    if not attendance_records:
+        print("No attendance to save!\n")
+        return
+
+    filename = "attendance.csv"
+    with open(filename, "w", newline="") as file:
+        writer = csv.writer(file)
+        header = ["Date"] + students
+        writer.writerow(header)
+
+        for date, record in attendance_records.items():
+            row = [date] + [record.get(s, "") for s in students]
+            writer.writerow(row)
+
+    print(f"Attendance saved to {filename}\n")
+
+
+def menu():
+    while True:
+        print("===== Student Attendance System =====")
+        print("1. Add Students")
+        print("2. Mark Attendance")
+        print("3. View Attendance")
+        print("4. Save to CSV")
+        print("5. Exit")
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            add_students()
+        elif choice == "2":
+            mark_attendance()
+        elif choice == "3":
+            view_attendance()
+        elif choice == "4":
+            save_to_csv()
+        elif choice == "5":
+            print("Exiting program...")
+            break
+        else:
+            print("Invalid choice! Try again.\n")
+
+
+menu()
